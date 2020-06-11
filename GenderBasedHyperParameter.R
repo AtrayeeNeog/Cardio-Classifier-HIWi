@@ -33,7 +33,11 @@ dtr <- dt[, !zv]
 str(dtr)
 colnames(dtr)
 n=length(dtr)
-correlationMatrix <- cor(dtr[,2:(n-1)], use="pairwise.complete.obs")
+# always keep the following feature(s)
+cols_fixed <- c("gender")
+# apply the correlation feature selection on the following features
+cols <- setdiff(names(dtr), cols_fixed)
+correlationMatrix <- cor(dtr[cols], use = "pairwise.complete.obs")
 
 # checking for NaNs:
 sapply(correlationMatrix, function(x)all(any(is.na(x))))
@@ -46,7 +50,11 @@ print(highlyCorrelated)
 length(highlyCorrelated)
 
 # Delete the highly correlated feature from dataset:
-dtr <- dtr[, -c(highlyCorrelated)]
+cols_to_remove <- cols[highlyCorrelated]
+# works only with dplyr >= 1.0
+dtr <- dtr %>% select(-all_of(cols_to_remove))
+# works also with dplyr < 1.0
+# dtr <- dtr %>% select(-cols_to_remove)
 length(dtr)
 colnames(dtr)
 
