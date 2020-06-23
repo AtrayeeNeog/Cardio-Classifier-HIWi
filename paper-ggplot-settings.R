@@ -1,0 +1,17 @@
+# general figure settings ----
+.fig_opts <- list(
+  base_size = 8,
+  colors_target = list(
+    pathology = c("steelblue3", "indianred3"),
+    gender = NULL # !fix me
+  )
+)
+
+if(!exists(".old_theme")) .old_theme <- theme_get()
+theme_set(
+  theme_minimal(base_size = .fig_opts$base_size, base_family = "sans",
+                base_line_size = .fig_opts$base_size / 30,
+                base_rect_size = .fig_opts$base_size / 30) +
+    theme(panel.grid.minor = element_blank()) +
+    theme(strip.text = element_text(face = "bold"))
+)
