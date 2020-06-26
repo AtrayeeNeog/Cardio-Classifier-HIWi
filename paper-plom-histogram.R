@@ -5,6 +5,7 @@ plom_histogram <- function(df, f, target) {
     select(any_of(f), any_of(target)) %>%
     rename(f = 1, target = 2)
   ggplot(dfp, aes(x = f)) +
+    scale_y_continuous(n.breaks = 3) +
     geom_histogram(aes(fill = target), bins = 12, color = "black", 
                    size = 0.3, alpha = 0.75) +
     facet_wrap(~ target, ncol = 1) +

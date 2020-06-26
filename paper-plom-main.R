@@ -15,10 +15,32 @@ df <- read_rds("Data/data-prep.rds")
 # select features and target ----
 # enhancement: automatically read result files instead of 
 # manually typing variable names 
-features <- c("diastolicMaxVortexVolumeTime",
-              "maxMeancircumferentialVelocity",
-              "systolicMaxMeanAxialVelocityTime")
-target <- "pathology"
+
+# # task 1: HHV vs. BAV patients
+# features <- c("maxVortexVolume",
+#               "diastolicMaxLeftRotationVolumeRel",
+#               "systolicMaxMeanPressureInVortexRegion")
+# target <- "pathology"
+
+# task 2: male vs. female HHV
+features <- c("medianDiameter",
+              "diastolicMinMeanPressureTime",
+              "diastolicMeanMeanPressure")
+target <- "gender"
+df <- df %>%
+  filter(pathology == "heart-healthy volunteers") %>%
+  mutate(!!target := factor(!!sym(target), labels = paste(c("female", "male"), "heart-healthy volunteers")))
+
+# # task 3: old HHV vs. BAV patients
+# features <- c("maxVortexVolumeTime",
+#               "systolicMaxVortexVolume",
+#               "diastolicMedianRightRotationVolumeRel"
+# ) 
+# target <- "ohhv_bav"
+# df <-
+#   df %>% 
+#   filter(pathology == "BAV patients" | age > 47) %>%
+#   mutate(!!target := fct_recode(pathology, "older heart-healthy volunteers" = "heart-healthy volunteers"))
 
 # make_plom() ----
 # (i=0) or (j=0) -> feature names

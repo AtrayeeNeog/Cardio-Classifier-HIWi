@@ -68,7 +68,9 @@ ggplot(df, aes(age)) +
   theme(panel.spacing.y = unit(0, "mm")) +
   theme(axis.text.x = element_markdown()) +
   theme(axis.ticks.x = element_line()) +
-  theme(legend.key.size = unit(0.35, "cm"))
+  theme(legend.key.size = unit(0.35, "cm")) +
+  theme(legend.box.margin = margin(0,0,-3,0,"mm")) +
+  theme(plot.margin = margin(-1,1,1,1,"mm"))
 
 ggsave(filename = "Figures/histogram-age-distribution.pdf",
-       width = 8, height = 4, units = "cm")
+       width = 8, height = 4.5, units = "cm")

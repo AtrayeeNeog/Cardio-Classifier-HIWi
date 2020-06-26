@@ -24,7 +24,7 @@ plom_scatter <- function(df, fr, fc, target) {
   
   ggplot(dfp, aes(x = fc, y = fr)) +
     scale_x_continuous(expand = c(0.02,0,0.02,0)) +
-    geom_point(aes(color = target), size = 0.7) +
+    geom_point(aes(color = target), size = 1, alpha = 0.75, pch = 16) +
     geom_smooth(aes(color = target), method = "lm", formula = "y ~ x", se = FALSE,
                 size = 0.5, fullrange = TRUE) +
     geom_smooth(method = "lm", formula = "y ~ x", color = "black", se = FALSE,
@@ -33,7 +33,7 @@ plom_scatter <- function(df, fr, fc, target) {
                     aes(x = label_pos_x, y = label_pos_y,
                         label = lapply(label_text, function(x){TeX(x, output = "character")}), 
                         color = target),
-                    size = 8/.pt, hjust = 0, direction = "y", #xlim = max(dfcor$x_max, Inf),
+                    size = 7/.pt, hjust = 0, direction = "y", #xlim = max(dfcor$x_max, Inf),
                     fill = "white", alpha = 0.85,
                     label.size = 0, box.padding = 0, label.padding = 0.1,
                     force = 0.5, parse = TRUE) +

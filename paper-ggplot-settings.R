@@ -3,7 +3,9 @@
   base_size = 8,
   colors_target = list(
     pathology = c("steelblue3", "indianred3"),
-    gender = NULL # !fix me
+    gender = c("#B73377", "#2DA9D9"),
+    ohhv_bav = c("#6D90AF", #"grey50"
+                 "indianred3")
   )
 )
 

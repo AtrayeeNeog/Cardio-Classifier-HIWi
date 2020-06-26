@@ -1,7 +1,7 @@
 # plots that only contain feature names 
 # shown left to or above the plom
 # meant to be called from make_plom()
-plom_rowcol <- function(f, what = c("x", "y")[1], max_length = 23) {
+plom_rowcol <- function(f, what = c("x", "y")[1], max_length = 25) {
   angle <- c("x" = 0, "y" = 90)[[what]]
   label <- f %>%
     str_replace_all("([A-Z])", " \\1") %>%
