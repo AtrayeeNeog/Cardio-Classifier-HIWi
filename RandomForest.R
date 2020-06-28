@@ -105,8 +105,10 @@ InfoGain <-function(){
   set.seed(123)
   model <- makeLearner("classif.randomForest", predict.type = "prob")
   lrn = makeFilterWrapper(learner = model, fw.method = "FSelectorRcpp_information.gain")
-  ps = makeParamSet(makeNumericParam("fw.perc", lower = 0, upper = 1))
-  rdesc = makeResampleDesc("CV", iters = 10)
+  ps = makeParamSet(makeNumericParam("fw.perc", lower = 0, upper = 1),
+                    makeIntegerParam("mtry",lower = 2, upper = 20),
+                    makeNumericParam("ntree", lower = 100, upper = 1000))
+  rdesc = makeResampleDesc("CV", iters = 10, stratify = TRUE)
   res = tuneParams(lrn, task = train_task, resampling = rdesc, par.set = ps, measures = kappa,
                    control = makeTuneControlGrid())
   
@@ -136,7 +138,9 @@ SequentialForward <-function(){
   model <- makeLearner("classif.randomForest", predict.type = "prob")
   kappa_sd <- setAggregation(kappa,test.sd)
   rdesc <-  makeResampleDesc("CV", iters = 10, stratify = TRUE)
-  lrn <-  makeFeatSelWrapper(model, resampling = rdesc, measures =list(mlr::kappa,kappa_sd),
+  ps <- makeParamSet(makeIntegerParam("mtry",lower = 5, upper = 20))
+  lrn <- makeTuneWrapper(model, resampling = rdesc, par.set = ps, control = makeTuneControlGrid(), show.info = FALSE)
+  lrn <-  makeFeatSelWrapper(lrn, resampling = rdesc, measures = list(mlr::kappa,kappa_sd),
                              control =  makeFeatSelControlSequential(method = "sfs", alpha = 0.02), show.info = TRUE)
   
   #train the model

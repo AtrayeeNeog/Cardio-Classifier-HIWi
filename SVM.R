@@ -139,8 +139,10 @@ SequentialForward <-function(){
   model <- makeLearner("classif.svm", predict.type = "prob")
   kappa_sd <- setAggregation(kappa,test.sd)
   rdesc <- makeResampleDesc("CV", iters = 10, stratify = TRUE)
-  lrn <-  makeFeatSelWrapper(model, resampling = rdesc,measures = list(mlr::kappa,kappa_sd),
-                             control =  makeFeatSelControlSequential(method = "sfs"), show.info = TRUE)
+  ps <- makeParamSet(makeDiscreteParam("cost", values = c(0.01, 0.1, 0.5, 1:3)))
+  lrn <- makeTuneWrapper(model, resampling = rdesc, par.set = ps, control = makeTuneControlGrid(), show.info = FALSE)
+  lrn <-  makeFeatSelWrapper(lrn, resampling = rdesc, measures = list(mlr::kappa,kappa_sd),
+                             control =  makeFeatSelControlSequential(method = "sbs", alpha = 0.02), show.info = TRUE)
   
   #train the model
   t.rpart <- mlr::train(lrn, train_task)
