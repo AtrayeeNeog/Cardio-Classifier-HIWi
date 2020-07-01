@@ -29,7 +29,8 @@ features <- c("medianDiameter",
 target <- "gender"
 df <- df %>%
   filter(pathology == "heart-healthy volunteers") %>%
-  mutate(!!target := factor(!!sym(target), labels = paste(c("female", "male"), "heart-healthy volunteers")))
+  mutate(!!target := factor(!!sym(target), labels = paste(c("female", "male"), 
+                                                          "heart-healthy volunteers")))
 
 # # task 3: old HHV vs. BAV patients
 # features <- c("maxVortexVolumeTime",
