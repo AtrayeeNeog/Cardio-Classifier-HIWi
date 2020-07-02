@@ -75,7 +75,7 @@ ChiSquare <-function(){
   kappa_sd <- setAggregation(kappa,test.sd)
   lrn = makeFilterWrapper(learner = model, fw.method = "FSelector_chi.squared")
   ps = makeParamSet(makeNumericParam("fw.perc", lower = 0, upper = 1))
-  rdesc = makeResampleDesc("CV", iters = 10)
+  rdesc = makeResampleDesc("CV", iters = 10, stratify = TRUE)
   res = tuneParams(lrn, task = train_task, resampling = rdesc, par.set = ps, measures = list(kappa,kappa_sd),
                    control = makeTuneControlGrid())
   
