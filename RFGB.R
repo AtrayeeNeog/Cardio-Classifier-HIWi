@@ -132,7 +132,7 @@ SequentialForward <-function(){
   set.seed(123)
   model <- makeLearner("classif.randomForest", predict.type = "prob")
   rdesc = makeResampleDesc("CV", iters = 10)
-  lrn = makeFeatSelWrapper(model, resampling = rdesc,
+  lrn = makeFeatSelWrapper(model, resampling = rdesc,measures = acc,
                            control =  makeFeatSelControlSequential(method = "sfs", alpha = 0.02), show.info = TRUE)
   
   #train the model
