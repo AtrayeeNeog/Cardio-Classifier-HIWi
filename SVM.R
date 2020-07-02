@@ -139,10 +139,8 @@ SequentialForward <-function(){
   model <- makeLearner("classif.svm", predict.type = "prob")
   kappa_sd <- setAggregation(kappa,test.sd)
   rdesc <- makeResampleDesc("CV", iters = 10, stratify = TRUE)
-  ps <- makeParamSet(makeDiscreteParam("cost", values = c(0.3, 0.5, 1:3)))
-  lrn <- makeTuneWrapper(model, resampling = rdesc, par.set = ps, control = makeTuneControlGrid(), show.info = FALSE)
-  lrn <-  makeFeatSelWrapper(lrn, resampling = rdesc, measures = list(mlr::kappa,kappa_sd),
-                             control =  makeFeatSelControlSequential(method = "sbs", alpha = 0.02), show.info = TRUE)
+  lrn <-  makeFeatSelWrapper(model, resampling = rdesc, measures = list(mlr::kappa,kappa_sd),
+                             control =  makeFeatSelControlSequential(method = "sfs", alpha = 0.02), show.info = TRUE)
   
   #train the model
   t.rpart <- mlr::train(lrn, train_task)
@@ -194,7 +192,7 @@ Genetic <-function(){
   kappa_sd <- setAggregation(kappa,test.sd)
   rdesc <- makeResampleDesc("CV", iters = 10, stratify = TRUE)
   lrn = makeFeatSelWrapper(model, resampling = rdesc,measures = list(mlr::kappa,kappa_sd),
-                           control =  makeFeatSelControlGA(maxit = 10), show.info = TRUE)
+                           control =  makeFeatSelControlGA(maxit = 15L, mu =17L ), show.info = TRUE)
   
   #train the model
   t.rpart <- mlr::train(lrn, train_task)
@@ -219,7 +217,7 @@ Random <-function(){
   model <- makeLearner("classif.ksvm", predict.type = "prob")
   rdesc <- makeResampleDesc("CV", iters = 10, stratify = TRUE)
   lrn = makeFeatSelWrapper(model, resampling = rdesc,
-                           control =  makeFeatSelControlRandom(maxit = 10), show.info = TRUE, measures = kappa)
+                           control =  makeFeatSelControlRandom(maxit = 200L), show.info = TRUE, measures = kappa)
   
   #train the model
   t.rpart <- mlr::train(lrn, train_task)

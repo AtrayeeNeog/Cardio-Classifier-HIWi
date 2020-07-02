@@ -135,7 +135,7 @@ InfoGain <-function(){
 SequentialForward <-function(){
   
   set.seed(123)
-  model <- makeLearner("classif.xgboost", predict.type = "prob")
+  model <- makeLearner("classif.gbm", predict.type = "prob")
   rdesc <-  makeResampleDesc("CV", iters = 10, stratify = TRUE)
   kappa_sd <- setAggregation(kappa,test.sd)
   lrn <-  makeFeatSelWrapper(model, resampling = rdesc, measures = list(mlr::kappa,kappa_sd),
@@ -191,7 +191,7 @@ Genetic <-function(){
   rdesc = makeResampleDesc("CV", iters=10)
   kappa_sd <- setAggregation(kappa,test.sd)
   lrn = makeFeatSelWrapper(model, resampling = rdesc,measures = list(mlr::kappa,kappa_sd),
-                           control =  makeFeatSelControlGA(maxit = 1L), show.info = TRUE)
+                           control =  makeFeatSelControlGA(maxit = 10L, mu =15L ), show.info = TRUE)
   
   #train the model
   t.rpart <- mlr::train(lrn, train_task)

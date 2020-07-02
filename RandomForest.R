@@ -138,9 +138,7 @@ SequentialForward <-function(){
   model <- makeLearner("classif.randomForest", predict.type = "prob")
   kappa_sd <- setAggregation(kappa,test.sd)
   rdesc <-  makeResampleDesc("CV", iters = 10, stratify = TRUE)
-  ps <- makeParamSet(makeIntegerParam("mtry",lower = 5, upper = 20))
-  lrn <- makeTuneWrapper(model, resampling = rdesc, par.set = ps, control = makeTuneControlGrid(), show.info = FALSE)
-  lrn <-  makeFeatSelWrapper(lrn, resampling = rdesc, measures = list(mlr::kappa,kappa_sd),
+  lrn <-  makeFeatSelWrapper(model, resampling = rdesc, measures = list(mlr::kappa,kappa_sd),
                              control =  makeFeatSelControlSequential(method = "sfs", alpha = 0.02), show.info = TRUE)
   
   #train the model
