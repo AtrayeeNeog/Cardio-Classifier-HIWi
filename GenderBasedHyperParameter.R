@@ -65,3 +65,4 @@ testing <- dtr[-intrain,]
 train_task <- makeClassifTask(data = training, target = "gender")
 test_task <- makeClassifTask(data = testing, target = "gender")
 
+str(training$gender)

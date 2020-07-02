@@ -33,7 +33,7 @@ Correlation <- function(){
   
   
   control <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
-  model <- caret::train(gender~., data=train, method="rpart", preProcess="scale", trControl=control, metric = "Kappa")
+  model <- caret::train(gender~., data=train, method="rpart", preProcess="scale", trControl=control, metric = "Accuracy")
   
   tptrain <- predict(model, newdata = train)
   tpmodel <- predict(model, newdata = test)
@@ -48,7 +48,7 @@ Correlation <- function(){
   predictions_test <- predict(model, newdata = test)
   predictions_test <- ifelse(predictions_test == "1",1,0)
   predictions_test
-  testing$gender
+  testing$gender <- ifelse(testing$gender == "1",1,0)
   
   # Performance
   cm <- confusionMatrix(as.factor(predictions_test), reference = as.factor(testing$gender))
@@ -73,7 +73,7 @@ ChiSquare <-function(){
   lrn = makeFilterWrapper(learner = model, fw.method = "FSelector_chi.squared")
   ps = makeParamSet(makeNumericParam("fw.perc", lower = 0, upper = 1))
   rdesc = makeResampleDesc("CV", iters = 10)
-  res = tuneParams(lrn, task = train_task, resampling = rdesc, par.set = ps, measures = kappa,
+  res = tuneParams(lrn, task = train_task, resampling = rdesc, par.set = ps, measures = acc,
                    control = makeTuneControlGrid())
   
   t.tree <- makeFilterWrapper(learner = model, fw.method = "FSelector_chi.squared",
@@ -104,7 +104,7 @@ InfoGain <-function(){
   lrn = makeFilterWrapper(learner = model, fw.method = "FSelectorRcpp_information.gain")
   ps = makeParamSet(makeNumericParam("fw.perc", lower = 0, upper = 1))
   rdesc = makeResampleDesc("CV", iters = 10)
-  res = tuneParams(lrn, task = train_task, resampling = rdesc, par.set = ps, measures = kappa,
+  res = tuneParams(lrn, task = train_task, resampling = rdesc, par.set = ps, measures = acc,
                    control = makeTuneControlGrid())
   
   t.tree <- makeFilterWrapper(learner = model, fw.method = "FSelectorRcpp_information.gain",
@@ -151,6 +151,7 @@ SequentialForward <-function(){
   print("Confusion Matrix for Test Data: "); print(calculateConfusionMatrix(tpmodel))
   print("Training Time for Train Data: ");print(mlr::performance(tptrain, measures = timetrain, model = t.rpart))
   print("Accuracy, AUC for Test Data: ");print(mlr::performance(tpmodel, measures = list(acc,auc,kappa), model = t.rpart))
+  rpart.plot(getLearnerModel(t.rpart,more.unwrap = TRUE))
   
 }
 
@@ -177,6 +178,7 @@ SequentialBackward <-function(){
   print("Confusion Matrix for Test Data: "); print(calculateConfusionMatrix(tpmodel))
   print("Training Time for Train Data: ");print(mlr::performance(tptrain, measures = timetrain, model = t.rpart))
   print("Accuracy, AUC for Test Data: ");print(mlr::performance(tpmodel, measures = list(acc,auc,kappa), model = t.rpart))
+  
 }
 
 Genetic <-function(){
