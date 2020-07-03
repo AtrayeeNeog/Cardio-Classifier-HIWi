@@ -166,7 +166,7 @@ SequentialBackward <-function(){
   kappa_sd <- setAggregation(kappa,test.sd)
   rdesc <- makeResampleDesc("CV", iters = 10, stratify = TRUE)
   lrn = makeFeatSelWrapper(model, resampling = rdesc,measures = list(mlr::kappa,kappa_sd),
-                           control =  makeFeatSelControlSequential(method = "sbs", alpha = 0.02), show.info = TRUE)
+                           control =  makeFeatSelControlSequential(method = "sbs", beta = -0.001), show.info = TRUE)
   
   #train the model
   t.rpart <- mlr::train(lrn, train_task)

@@ -164,8 +164,8 @@ SequentialBackward <-function(){
   model <- makeLearner("classif.randomForest", predict.type = "prob")
   rdesc <-  makeResampleDesc("CV", iters = 10, stratify = TRUE)
   kappa_sd <- setAggregation(kappa,test.sd)
-  ctrl <- makeFeatSelControlSequential(method = "sbs", alpha = 0.02)
-  lrn <-  makeFeatSelWrapper(model, resampling = rdesc,control = ctrl , show.info = TRUE)
+  ctrl <- makeFeatSelControlSequential(method = "sbs", beta  = -0.003)
+  lrn <-  makeFeatSelWrapper(model, resampling = rdesc,measures = list(mlr::kappa,kappa_sd),control = ctrl , show.info = TRUE)
   #r <- resample(lrn, train_task, measures = list(kappa,kappa_sd),resampling = rdesc,extract = getFeatSelResult)
   
   #train the model

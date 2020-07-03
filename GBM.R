@@ -162,10 +162,10 @@ SequentialBackward <-function(){
   
   set.seed(123)
   model <- makeLearner("classif.gbm", predict.type = "prob")
-  rdesc = makeResampleDesc("CV", iters = 10)
+  rdesc = makeResampleDesc("CV", iters = 10, stratify = TRUE)
   kappa_sd <- setAggregation(kappa,test.sd)
   lrn = makeFeatSelWrapper(model, resampling = rdesc,measures = list(kappa,kappa_sd),
-                           control =  makeFeatSelControlSequential(method = "sbs", alpha = 0.02), show.info = TRUE)
+                           control =  makeFeatSelControlSequential(method = "sbs", beta = -0.001), show.info = TRUE)
   
   #train the model
   t.rpart <- mlr::train(lrn, train_task)
