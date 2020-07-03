@@ -75,7 +75,7 @@ ChiSquare <-function(){
   model <- makeLearner("classif.randomForest", predict.type = "prob")
   lrn = makeFilterWrapper(learner = model, fw.method = "FSelector_chi.squared")
   ps = makeParamSet(makeNumericParam("fw.perc", lower = 0, upper = 1))
-  rdesc = makeResampleDesc("CV", iters = 10)
+  rdesc = makeResampleDesc("CV", iters = 10, stratify = TRUE)
   res = tuneParams(lrn, task = train_task, resampling = rdesc, par.set = ps, measures = kappa,
                    control = makeTuneControlGrid())
   
@@ -139,7 +139,7 @@ SequentialForward <-function(){
   kappa_sd <- setAggregation(kappa,test.sd)
   rdesc <-  makeResampleDesc("CV", iters = 10, stratify = TRUE)
   lrn <-  makeFeatSelWrapper(model, resampling = rdesc, measures = list(mlr::kappa,kappa_sd),
-                             control =  makeFeatSelControlSequential(method = "sfs", alpha = 0.02), show.info = TRUE)
+                             control =  makeFeatSelControlSequential(method = "sfs", alpha = 0.1), show.info = TRUE)
   
   #train the model
   t.rpart <- mlr::train(lrn, train_task)
