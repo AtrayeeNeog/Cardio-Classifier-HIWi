@@ -12,36 +12,60 @@ source("paper-plom-hulls.R", echo = FALSE)
 source("paper-plom-rowcol.R", echo = FALSE)
 df <- read_rds("Data/data-prep.rds")
 
-# select features and target ----
-# enhancement: automatically read result files instead of 
-# manually typing variable names 
+# select classification task ----
+task <- 3
 
-# # task 1: HHV vs. BAV patients
-# features <- c("maxVortexVolume",
-#               "diastolicMaxLeftRotationVolumeRel",
-#               "systolicMaxMeanPressureInVortexRegion")
-# target <- "pathology"
+# task 1: HHV vs. BAV patients
+if(task == 1) {
+  features <- c(
+    "maxVortexVolumeTime",
+    "maxOverallCircumferentialVelocityTime",
+    "systolicMaxMeancircumferentialVelocity"
+  )
+  target <- "pathology"
+  rel_width_feature_name_subplots <- 0.1
+  dim <- 9 # width and height of PLOM in cm
+  caption <- "(a)"
+}
 
-# task 2: male vs. female HHV
-features <- c("medianDiameter",
-              "diastolicMinMeanPressureTime",
-              "diastolicMeanMeanPressure")
-target <- "gender"
-df <- df %>%
-  filter(pathology == "heart-healthy volunteers") %>%
-  mutate(!!target := factor(!!sym(target), labels = paste(c("female", "male"), 
-                                                          "heart-healthy volunteers")))
+# task 2: task 2: old HHV vs. BAV patients
+if(task == 2) {
+  features <- c(
+    "maxMeanAxialVelocity",
+    "systolicMaxMeanAxialVelocityTime",
+    "diastolicMaxMeanCircumferentialVelocityTime",
+    "diastolicMedianRightRotationVolumeRel",
+    "maxMeanPressureInVortexRegion"
+  )
+  target <- "ohhv_bav"
+  df <-
+    df %>%
+    filter(pathology == "BAV patients" | age > 47) %>%
+    mutate(!!target := fct_recode(pathology, 
+                                  "Older heart-healthy volunteers" = 
+                                    "Heart-healthy volunteers"))
+  rel_width_feature_name_subplots <- 0.06
+  dim <- 15 # width and height of PLOM in cm
+  caption <- NULL
+}
 
-# # task 3: old HHV vs. BAV patients
-# features <- c("maxVortexVolumeTime",
-#               "systolicMaxVortexVolume",
-#               "diastolicMedianRightRotationVolumeRel"
-# ) 
-# target <- "ohhv_bav"
-# df <-
-#   df %>% 
-#   filter(pathology == "BAV patients" | age > 47) %>%
-#   mutate(!!target := fct_recode(pathology, "older heart-healthy volunteers" = "heart-healthy volunteers"))
+# task 3: male vs. female HHV
+if(task == 3) {
+  features <- c(
+    "maxOverallVelocity",
+    "systolicMaxOverallVelocityQ99",
+    "diastolicMaxOverallAxialVelocityTime"
+  )
+  target <- "gender"
+  df <- df %>%
+    filter(pathology == "Heart-healthy volunteers") %>%
+    mutate(!!target := factor(!!sym(target), 
+                              labels = paste(c("Female", "Male"),
+                                             "heart-healthy volunteers")))
+  rel_width_feature_name_subplots <- 0.1
+  dim <- 9 # width and height of PLOM in cm
+  caption <- "(b)"
+}
 
 # make_plom() ----
 # (i=0) or (j=0) -> feature names
@@ -72,23 +96,41 @@ legend <- as_ggplot(
   get_legend(
     plot_list[[idx]] + 
       guides(fill = guide_legend(NULL, direction = "horizontal", nrow = 1)) +
-      theme(legend.text = element_text(size = rel(1), margin = margin(r = 0.3, unit = "cm")))
+      theme(legend.text = element_text(size = 6, margin = margin(r = 0.3, unit = "cm"))) +
+      theme(legend.key.size = unit(4, "mm"))
   )
 ) #%>% print()
 
 # patchwork ----
-ww <- 0.06 # size of the feature name subplots
+ww <- rel_width_feature_name_subplots # size of the feature name subplots
 rr <- 0.04 # height of the legend
-mm <- 0.1 # subplot margins (trbl) in cm
-p <- wrap_plots(c(list(legend), plot_list), 
+mm <- 0.05 # subplot margins (trbl) in cm
+LETTERSletters <- c(LETTERS, letters)
+p <- wrap_plots(c(list(legend), plot_list) %>% set_names(LETTERSletters[1:length(.)]),
                 design = paste0(paste0(rep("A", length(features)+1), collapse = ""), "\n",
-                                str_replace_all(paste0(LETTERS[1+(1:nrow(f_grid))], collapse = ""),
+                                str_replace_all(paste0(LETTERSletters[1+(1:nrow(f_grid))], collapse = ""),
                                                 paste0("(.{", length(features) + 1, "})"), "\\1\n")),
                 byrow = TRUE,
                 widths = c(ww, rep((1-ww)/length(features), length(features))),
-                heights = c(rr, ww, rep((1-ww-rr)/length(features), length(features)))
-) & theme(plot.margin = margin(mm, mm, mm, mm, "cm")) 
+                heights = c(rr, ww, rep((1-ww-rr)/length(features), length(features))),
+) &
+  theme(plot.margin = margin(mm, mm, mm, mm, "cm"))
+if(!is.null(caption)) {
+  p <- p +
+    plot_annotation(
+      title = caption,
+      theme = theme(plot.title = element_text(size = 8, face = "bold",
+                                              margin = margin(1,0,-3.5,0, "mm")))
+    )
+}
+
 # p
 
 ggsave(filename = here::here("Figures", "plom", paste0("plom-", target, ".pdf")),
-       plot = p, width = 14, height = 13, units = "cm")
+       plot = p, width = dim, height = dim, units = "cm") 
+
+# library(rpart)
+# library(rpart.plot)
+# dft <- df %>% select(one_of(features), target = one_of(target))
+# tree <- rpart(target ~ ., data = dft, control = rpart.control(minbucket = 5, maxdepth = 4))
+# rpart.plot(tree, type = 5, extra = 1)

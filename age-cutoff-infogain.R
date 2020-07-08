@@ -65,9 +65,10 @@ ggplot(df, aes(age)) +
   theme(legend.position = "top") +
   theme(strip.text = element_blank()) +
   theme(panel.grid.major.x = element_blank()) +
-  theme(panel.spacing.y = unit(0, "mm")) +
+  theme(panel.spacing.y = unit(1, "mm")) +
   theme(axis.text.x = element_markdown()) +
   theme(axis.ticks.x = element_line()) +
+  theme(axis.text.y = element_text(angle = 0)) +
   theme(legend.key.size = unit(0.35, "cm")) +
   theme(legend.box.margin = margin(0,0,-3,0,"mm")) +
   theme(plot.margin = margin(-1,1,1,1,"mm"))
