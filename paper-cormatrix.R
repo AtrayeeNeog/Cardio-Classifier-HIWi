@@ -11,7 +11,6 @@ df_cor <- df %>%
   mutate_if(is.factor, as.integer)
 
 df_coef <- expand_grid(x = names(df_cor), y = names(df_cor)) %>%
-  filter(x != y) %>%
   rowwise() %>%
   mutate(coef = cor(x = df_cor[[x]], y = df_cor[[y]], method = "spearman")) %>%
   ungroup()
@@ -44,11 +43,12 @@ df_groups <- tibble(f_order = f_order) %>%
 # manual
 df_groups <- tribble(
   ~xmin, ~xmax,
-  "maxOverallAxialVelocityQ99", "vortexCoverageRel",
+  "maxOverallAxialVelocityQ99", "meanMeanVelocity",
+  "diastolicMedianVortexVolume", "diastolicMeanMeanCircumferentialVelocity",
+  "systolicMeanVortexVolume", "vortexCoverageRel",
+  "diastolicMaxMeanAxialVelocity", "diastolicMaxOverallVelocity",
   "diastolicMaxLeftRotationVolumeRel", "systolicMaxLeftRotationVolumeRel",
-  "diastolicMaxMeanAxialVelocity", "systolicMaxOverallVelocityTime",
-  "systolicMaxMeanPressureInVortexRegion", "minFlowJetHighVelocityAreaPercentVelocityWeighted",
-  "age", "medianDiameter"
+  "maxCrossSectionalArea", "medianDiameter"
 )
 
 ggplot(df_plot, aes(x, y, fill = coef)) +
@@ -57,8 +57,8 @@ ggplot(df_plot, aes(x, y, fill = coef)) +
   geom_rect(data = df_groups, aes(xmin = xmin, ymin=xmin, xmax=xmax, ymax =xmax),
             inherit.aes = FALSE, fill = NA, color = "black",
             size = 0.4) +
-    labs(fill = "Feature-feature\ncorrelation") +
-    scale_fill_distiller(palette = "BrBG", 
+    labs(fill = "Feature correlation") +
+    scale_fill_distiller(palette = "PiYG", #"BrBG"
                          limits = c(-1,1),
                          breaks = seq(-1, 1, 0.5)) +
   guides(fill = guide_colorbar(ticks.colour = "black", nbin = 100)) +
@@ -68,13 +68,13 @@ ggplot(df_plot, aes(x, y, fill = coef)) +
   theme(axis.ticks = element_blank()) +
   theme(axis.line = element_blank()) +
   theme(legend.position = "top") +
-  theme(legend.key.width = unit(0.7, "cm")) +
+  theme(legend.key.width = unit(0.82, "cm")) +
   theme(legend.key.height = unit(0.3, "cm")) +
   # theme(legend.title =  = margin(0,0,0,1, "lines")) +
   theme(legend.title = element_text(size = 7, vjust = 0.75, margin = margin(0,0.5,0,0,"lines"))) +
   theme(legend.text = element_text(size = 6)) +
-  # theme(plot.margin = margin(-1,0,-1,0,"lines")) +
-  theme(legend.margin = margin(0,0,-2,0, "mm"))
+  theme(plot.margin = margin(0,1,-0.5,0,"mm")) +
+  theme(legend.margin = margin(0,0,-3,0, "mm"))
 
 # ggsave(filename = "Figures/corplot.pdf", width = 50, height = 50, units = "cm")
 ggsave(filename = "Figures/corplot.pdf", width = 7.2, height = 8, units = "cm")

@@ -50,28 +50,29 @@ source("paper-ggplot-settings.R", echo = FALSE)
 library(ggtext)
 
 ggplot(df, aes(age)) +
-  scale_x_continuous(breaks = c(seq(20,80,10), opt_cutpoint),
-                     labels = c(seq(20,80,10), paste0("**", opt_cutpoint, "**")),
-                     expand = c(0,1,0,1)) +
+  scale_x_continuous(breaks = c(setdiff(seq(20,80,20), -1), opt_cutpoint),
+                     labels = c(setdiff(seq(20,80,20), -1), paste0("**", opt_cutpoint, "**")),
+                     expand = c(0,0.5,0,0.5)) +
   geom_histogram(data = df %>% select(-pathology),
-                 fill = "grey90", color = "grey90", size = 0.2, alpha = 0.5,
-                 binwidth = 5, boundary = opt_cutpoint) +
-  geom_histogram(aes(fill = pathology), color = "grey90", size = 0.2, alpha = 0.9,
-                 binwidth = 5, boundary = opt_cutpoint) +
+                 fill = "grey95", color = "grey90", size = 0.2, alpha = 0.5,
+                 binwidth = 5, boundary = 0) +
+  geom_histogram(color = "grey60", size = 0.2, alpha = 0.9, fill = "grey70",
+                 binwidth = 5, boundary = 0) +
   geom_vline(xintercept = opt_cutpoint, size = 0.5, linetype = "solid") +
-  facet_wrap(~ pathology, ncol = 1) +
-  scale_fill_manual(values = .fig_opts$colors_target[["pathology"]]) +
+  facet_wrap(~ pathology, nrow = 1) +
+  # scale_fill_manual(values = .fig_opts$colors_target[["pathology"]]) +
   labs(x = "Age", y = "Count", fill = NULL) +
   theme(legend.position = "top") +
-  theme(strip.text = element_blank()) +
+  theme(strip.text = element_text(size = 8, face = "plain", margin = margin(0.5,0,0.5,0,"mm"))) +
+  theme(strip.background = element_rect(color = NA, fill = "grey90")) +
   theme(panel.grid.major.x = element_blank()) +
-  theme(panel.spacing.y = unit(1, "mm")) +
+  # theme(panel.spacing.y = unit(1, "mm")) +
   theme(axis.text.x = element_markdown()) +
   theme(axis.ticks.x = element_line()) +
   theme(axis.text.y = element_text(angle = 0)) +
-  theme(legend.key.size = unit(0.35, "cm")) +
-  theme(legend.box.margin = margin(0,0,-3,0,"mm")) +
-  theme(plot.margin = margin(-1,1,1,1,"mm"))
+  # theme(legend.key.size = unit(0.35, "cm")) +
+  # theme(legend.box.margin = margin(0,0,-3,0,"mm")) +
+  theme(plot.margin = margin(0.5,1,0.5,0.5,"mm"))
 
 ggsave(filename = "Figures/histogram-age-distribution.pdf",
-       width = 8, height = 4.5, units = "cm")
+       width = 8, height = 3.25, units = "cm")

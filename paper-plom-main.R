@@ -13,27 +13,27 @@ source("paper-plom-rowcol.R", echo = FALSE)
 df <- read_rds("Data/data-prep.rds")
 
 # select classification task ----
-task <- 3
+task <- 2
 
 # task 1: HHV vs. BAV patients
 if(task == 1) {
   features <- c(
     "maxVortexVolumeTime",
-    "maxOverallCircumferentialVelocityTime",
-    "systolicMaxMeancircumferentialVelocity"
+    "maxOverallInPlaneVelocityTime" = "maxOverallCircumferentialVelocityTime",
+    "systolicMaxMeanInPlaneVelocity" = "systolicMaxMeancircumferentialVelocity"
   )
   target <- "pathology"
   rel_width_feature_name_subplots <- 0.1
-  dim <- 9 # width and height of PLOM in cm
+  dim <- 9.5 # width and height of PLOM in cm
   caption <- "(a)"
 }
 
 # task 2: task 2: old HHV vs. BAV patients
 if(task == 2) {
   features <- c(
-    "maxMeanAxialVelocity",
-    "systolicMaxMeanAxialVelocityTime",
-    "diastolicMaxMeanCircumferentialVelocityTime",
+    "maxMeanThroughPlaneVelocity" = "maxMeanAxialVelocity",
+    "systolicMaxMeanThroughPlaneVelocityTime" = "systolicMaxMeanAxialVelocityTime",
+    "diastolicMaxMeanCircumferentialVelocityTime" = "diastolicMaxMeanCircumferentialVelocityTime",
     "diastolicMedianRightRotationVolumeRel",
     "maxMeanPressureInVortexRegion"
   )
@@ -54,7 +54,7 @@ if(task == 3) {
   features <- c(
     "maxOverallVelocity",
     "systolicMaxOverallVelocityQ99",
-    "diastolicMaxOverallAxialVelocityTime"
+    "diastolicMaxOverallThroughPlaneVelocityTime" = "diastolicMaxOverallAxialVelocityTime"
   )
   target <- "gender"
   df <- df %>%
@@ -63,9 +63,18 @@ if(task == 3) {
                               labels = paste(c("Female", "Male"),
                                              "heart-healthy volunteers")))
   rel_width_feature_name_subplots <- 0.1
-  dim <- 9 # width and height of PLOM in cm
+  dim <- 9.5 # width and height of PLOM in cm
   caption <- "(b)"
 }
+
+nam_feat <- which(names(features) != "")
+if(length(nam_feat) > 0) {
+  pos <- which(names(df) %in% features[nam_feat])
+  names(df)[pos] <- names(features)[nam_feat]
+  features[nam_feat] <- names(features[nam_feat])
+  features <- unname(features)
+}
+
 
 # make_plom() ----
 # (i=0) or (j=0) -> feature names
