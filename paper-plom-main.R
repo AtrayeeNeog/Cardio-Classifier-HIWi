@@ -13,14 +13,14 @@ source("paper-plom-rowcol.R", echo = FALSE)
 df <- read_rds("Data/data-prep.rds")
 
 # select classification task ----
-task <- 2
+task <- 3
 
 # task 1: HHV vs. BAV patients
 if(task == 1) {
   features <- c(
-    "maxVortexVolumeTime",
-    "maxOverallInPlaneVelocityTime" = "maxOverallCircumferentialVelocityTime",
-    "systolicMaxMeanInPlaneVelocity" = "systolicMaxMeancircumferentialVelocity"
+    "Time-to-Peak-Vorticity" = "maxVortexVolumeTime",
+    "Time-to-Peak-In-Plane-Velocity" = "maxOverallCircumferentialVelocityTime",
+    "Peak-Systolic-In-Plane-Mean-Velocity" = "systolicMaxMeancircumferentialVelocity"
   )
   target <- "pathology"
   rel_width_feature_name_subplots <- 0.1
@@ -31,19 +31,17 @@ if(task == 1) {
 # task 2: task 2: old HHV vs. BAV patients
 if(task == 2) {
   features <- c(
-    "maxMeanThroughPlaneVelocity" = "maxMeanAxialVelocity",
-    "systolicMaxMeanThroughPlaneVelocityTime" = "systolicMaxMeanAxialVelocityTime",
-    "diastolicMaxMeanCircumferentialVelocityTime" = "diastolicMaxMeanCircumferentialVelocityTime",
-    "diastolicMedianRightRotationVolumeRel",
-    "maxMeanPressureInVortexRegion"
+    "Peak-Systolic-Mean-Velocity" = "maxMeanAxialVelocity",
+    "Time-to-Peak-Systolic-Through-Plane-Mean-Velocity" = "systolicMaxMeanAxialVelocityTime",
+    "Time-to-Peak-Diastolic-In-Plane-Mean-Velocity" = "diastolicMaxMeanCircumferentialVelocityTime",
+    "Diastolic-Median-Right-Rotation-Volume-Rel" = "diastolicMedianRightRotationVolumeRel",
+    "Peak-Mean-Vorticity-Pressure" = "maxMeanPressureInVortexRegion"
   )
   target <- "ohhv_bav"
   df <-
     df %>%
     filter(pathology == "BAV patients" | age > 47) %>%
-    mutate(!!target := fct_recode(pathology, 
-                                  "Older heart-healthy volunteers" = 
-                                    "Heart-healthy volunteers"))
+    mutate(!!target := fct_recode(pathology, "Older heart-healthy volunteers" = "Heart-healthy volunteers"))
   rel_width_feature_name_subplots <- 0.06
   dim <- 15 # width and height of PLOM in cm
   caption <- NULL
@@ -52,9 +50,9 @@ if(task == 2) {
 # task 3: male vs. female HHV
 if(task == 3) {
   features <- c(
-    "maxOverallVelocity",
-    "systolicMaxOverallVelocityQ99",
-    "diastolicMaxOverallThroughPlaneVelocityTime" = "diastolicMaxOverallAxialVelocityTime"
+    "Peak-Velocity" = "maxOverallVelocity",
+    "Peak-Systolic-VelocityQ99" = "systolicMaxOverallVelocityQ99",
+    "Time-to-Peak-Diastolic-Through-Plane-Velocity" = "diastolicMaxOverallAxialVelocityTime"
   )
   target <- "gender"
   df <- df %>%
